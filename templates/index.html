@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional: Your custom CSS and Google Fonts -->
+    <link href="{{ url_for('static', filename='custom.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+</head>
+
+<style>
+    body {
+
+        font-family: "DM Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 300;
+        font-style: normal;
+
+        background-color: rgb(0, 0, 0);
+
+    }
+
+    .container {
+        height: 75vh;
+    }
+
+    /* Style for disabled button */
+    .disabled-btn {
+        background-color: #d0d0d0;
+        border-color: #6c757d;
+        color: black;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    /* Custom rounded style */
+    .rounded-custom {
+        border-radius: 14px;
+        /* Adjust the value as needed */
+    }
+
+    /* Custom upload button style */
+    .upload-button {
+        justify-content: space-between;
+        padding-inline: 10rem;
+        transition: padding-inline 0.2s ease-in-out;
+        /* Define the transition */
+    }
+
+    /* Custom upload button hover effect */
+    .upload-button:hover {
+        padding-inline: 7rem;
+
+    }
+
+    .upload-button:disabled:hover {
+        padding-inline: 10rem;
+    }
+
+    .upload-file {
+        border: 1px dashed #8e8e8e;
+        padding: 3rem;
+        border-radius: 8px;
+        height: 100%;
+    }
+</style>
+
+<body>
+    <div class="whole d-flex flex-row p-4" style="height: 95vh; overflow-y: hidden;">
+
+        <div class="container p-3  d-flex flex-column " style="width: 35%;">
+
+            <div class="border border-dark rounded-custom p-4 d-flex flex-column justify-content-start mb-2 bg-light">
+
+                <h1>PDF Highlighter</h1>
+
+                <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
+                    <div class="d-flex flex-column w-100 justify-content-between align-items-center">
+                        <div class="form-group d-flex flex-column justify-content-start mt-3" style="width: 100%;">
+                            <label for="file">Escolha um arquivo PDF:</label>
+                            <div class="d-flex flex-row align-items-center justify-content-start upload-file">
+                                <!-- Placeholder for icon -->
+                                <div id="icon-placeholder" class="mx-2"></div>
+                                <input type="file" name="file" id="file" class="form-control-file">
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+
+
+                    <h4>Palavras Chaves:</h4>
+
+                    <textarea placeholder="Cole as palavras chaves aqui..." required name="palavras" id="myTextarea"
+                        cols="30" rows="6" class="w-100 mb-4" style="max-height: 30%; resize: none;"></textarea>
+                    <script>
+                        // Function to adjust textarea height based on content
+                        function adjustTextareaHeight() {
+                            var textarea = document.getElementById('myTextarea');
+                            textarea.style.height = 'auto'; // Reset height to auto to calculate the content height
+                            textarea.style.height = textarea.scrollHeight + 'px'; // Set height to content height
+
+                            // Set maximum height based on parent's height
+                            var parentHeight = textarea.parentElement.offsetHeight;
+                            var maxHeight = 0.4 * parentHeight; // Set maximum height to 60% of parent's height
+                            if (parseInt(textarea.style.height) > maxHeight) {
+                                textarea.style.height = maxHeight + 'px'; // Apply maximum height to textarea
+                            }
+                        }
+
+                        // Add event listener for input events (e.g., typing or pasting)
+                        document.getElementById('myTextarea').addEventListener('input', adjustTextareaHeight);
+
+                        // Call the function once to adjust the textarea height initially
+                        adjustTextareaHeight();
+                    </script>
+
+                    <button style="width: 100%;" type="submit"
+                        class="upload-button btn btn-dark d-flex flex-row align-items-center disabled-btn "
+                        id="upload-btn" disabled>Subir <i class="fas fa-file-upload"></i></button>
+
+                </form>
+
+            </div>
+
+
+
+
+
+        </div>
+
+        <div class="p-3 pr-5 w-100" style="height: 100%;">
+            <div class=" p-4 bg-light" style="border-radius: 18px; border: 1px solid black; height:  100%;">
+
+                <h1>PDF Displayer</h1>
+                <form id="pdf_form">
+                    <label for="pdf_select">Select a PDF:</label>
+                    <select name="pdf_select" id="pdf_select">
+                        {% if not pdf_file %}
+                        <option value="" disabled selected>Sem Arquivos</option>
+                        {% endif %}
+                        {% for pdf_file in pdf_files %}
+                        <option value="{{ pdf_file }}">{{ pdf_file }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit"> <!-- Hide the submit button -->
+                </form>
+                <hr>
+                <div style="height: 100%;">
+                    <object id="pdf_object" data="" type="application/pdf" width="100%" height="80%">
+
+                        <iframe id="pdf_iframe" src="" width="100%" height="100%">
+                            <p>This browser does not support PDF!</p>
+                        </iframe>
+                    </object>
+                </div>
+
+                <script>
+                    $('#pdf_select').change(function () {
+                        var selectedPdf = $(this).val();
+                        var url = "{{ url_for('static', filename='') }}" + selectedPdf;
+                        $('#pdf_iframe').attr('src', url);
+                        $('#pdf_object').attr('data', url);
+                    });
+                </script>
+
+            </div>
+
+        </div>
+
+
+
+
+    </div>
+
+    <!-- Bootstrap JavaScript (Optional: jQuery should be included before Bootstrap JS if needed) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Function to update icon based on file validity
+        function updateIcon(valid) {
+            var iconPlaceholder = document.getElementById('icon-placeholder');
+            if (valid) {
+                // If file is valid, show green check icon
+                iconPlaceholder.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+                // Enable the upload button
+                document.getElementById('upload-btn').disabled = false;
+                // Remove the disabled class from button
+                document.getElementById('upload-btn').classList.remove('disabled-btn');
+
+
+            } else {
+                // If file is invalid, show red icon
+                iconPlaceholder.innerHTML = '<i class="fas fa-times-circle text-danger"></i>';
+                // Disable the upload button
+                document.getElementById('upload-btn').disabled = true;
+                // Add the disabled class to button
+                document.getElementById('upload-btn').classList.add('disabled-btn');
+
+            }
+        }
+        // Function to check if the file has a valid format
+        function checkFile() {
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+            var validFormats = ['pdf']; // Add more valid formats if needed
+            var fileExtension = file.name.split('.').pop().toLowerCase();
+            var isValid = validFormats.includes(fileExtension);
+            updateIcon(isValid);
+        }
+        // Add event listener to file input to check file format on change
+        document.getElementById('file').addEventListener('change', checkFile);
+    </script>
+</body>
+
+</html>
