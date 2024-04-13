@@ -80,19 +80,20 @@
         height: 100%;
     }
 
-    .whole{
+    .whole {
         display: flex;
         flex-direction: row;
         padding: 2rem;
-        height: 95vh; overflow-y: hidden;
+        height: 95vh;
+        overflow-y: hidden;
     }
 
-    .displayer{
+    .displayer {
         width: 75%;
     }
 
 
-    /* Media query for screens with a maximum width of 600px */
+    /* Media query for screens with a maximum width of 1200px */
     @media only screen and (max-width: 1200px) {
         .whole {
             flex-direction: column;
@@ -102,23 +103,44 @@
         }
 
         .container {
-            width: 100%;
+            width: 100% !important;
             padding: 0;
             margin-bottom: 1rem;
+            margin-inline: 0;
+        }
+
+        .container-child {
+            width: 100% !important;
         }
 
         .displayer {
             width: 100%;
         }
 
-        .upload-button{
+        .upload-button {
             padding-inline: 7rem;
-        
+
         }
 
-        .pdf-displayer{
+        .pdf-displayer {
             width: 100%;
         }
+    }
+
+    @media (min-width: 768px)
+    { .container,
+    .container-md,
+    .container-sm {
+        max-width: 100%;
+    }
+    }
+
+    @media (min-width: 576px)
+    { .container,
+    .container-md,
+    .container-sm {
+        max-width: 100%;
+    }
     }
 </style>
 
@@ -127,7 +149,8 @@
 
         <div class="container">
 
-            <div class="border border-dark rounded-custom p-4 d-flex flex-column justify-content-start mb-2 bg-light">
+            <div class=" container-child border border-dark rounded-custom p-4 d-flex flex-column justify-content-start mb-2 bg-light"
+                style="width: 100%;">
 
                 <h1>PDF Highlighter</h1>
 
@@ -174,9 +197,8 @@
                         adjustTextareaHeight();
                     </script>
 
-                    <button type="submit"
-                        class="upload-button btn btn-dark disabled-btn "
-                        id="upload-btn" disabled>Subir <i class="fas fa-file-upload"></i></button>
+                    <button type="submit" class="upload-button btn btn-dark disabled-btn " id="upload-btn"
+                        disabled>Subir <i class="fas fa-file-upload"></i></button>
 
                 </form>
 
