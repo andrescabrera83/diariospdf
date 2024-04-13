@@ -36,6 +36,7 @@
 
     .container {
         height: 75vh;
+        width: 25%;
     }
 
     /* Style for disabled button */
@@ -58,6 +59,7 @@
         justify-content: space-between;
         padding-inline: 10rem;
         transition: padding-inline 0.2s ease-in-out;
+        width: 100%;
         /* Define the transition */
     }
 
@@ -77,12 +79,53 @@
         border-radius: 8px;
         height: 100%;
     }
+
+    .whole{
+        display: flex;
+        flex-direction: row;
+        padding: 2rem;
+        height: 95vh; overflow-y: hidden;
+    }
+
+    .displayer{
+        width: 75%;
+    }
+
+
+    /* Media query for screens with a maximum width of 600px */
+    @media only screen and (max-width: 1200px) {
+        .whole {
+            flex-direction: column;
+            padding: 0.8rem;
+            overflow: auto;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .displayer {
+            width: 100%;
+        }
+
+        .upload-button{
+            padding-inline: 7rem;
+        
+        }
+
+        .pdf-displayer{
+            width: 100%;
+        }
+    }
 </style>
 
 <body>
-    <div class="whole d-flex flex-row p-4" style="height: 95vh; overflow-y: hidden;">
+    <div class="whole">
 
-        <div class="container p-3  d-flex flex-column " style="width: 35%;">
+        <div class="container">
 
             <div class="border border-dark rounded-custom p-4 d-flex flex-column justify-content-start mb-2 bg-light">
 
@@ -131,8 +174,8 @@
                         adjustTextareaHeight();
                     </script>
 
-                    <button style="width: 100%;" type="submit"
-                        class="upload-button btn btn-dark d-flex flex-row align-items-center disabled-btn "
+                    <button type="submit"
+                        class="upload-button btn btn-dark disabled-btn "
                         id="upload-btn" disabled>Subir <i class="fas fa-file-upload"></i></button>
 
                 </form>
@@ -145,8 +188,8 @@
 
         </div>
 
-        <div class="p-3 pr-5 w-100" style="height: 100%;">
-            <div class=" p-4 bg-light" style="border-radius: 18px; border: 1px solid black; height:  100%;">
+        <div class=" displayer" style="height: 100%;">
+            <div class=" p-4 bg-light pdf-displayer" style="border-radius: 18px; border: 1px solid black; ">
 
                 <h1>PDF Displayer</h1>
                 <form id="pdf_form">
