@@ -30,13 +30,15 @@
         font-weight: 300;
         font-style: normal;
 
-        background-color: rgb(0, 0, 0);
+        background-color: rgb(193, 193, 193);
+        margin: 0;
 
     }
 
     .container {
         height: 75vh;
         width: 25%;
+        padding: 0;
     }
 
     /* Style for disabled button */
@@ -57,7 +59,7 @@
     /* Custom upload button style */
     .upload-button {
         justify-content: space-between;
-        padding-inline: 10rem;
+        padding-inline: 6rem;
         transition: padding-inline 0.2s ease-in-out;
         width: 100%;
         /* Define the transition */
@@ -65,12 +67,12 @@
 
     /* Custom upload button hover effect */
     .upload-button:hover {
-        padding-inline: 7rem;
+        padding-inline: 3rem;
 
     }
 
     .upload-button:disabled:hover {
-        padding-inline: 10rem;
+        padding-inline: 6rem;
     }
 
     .upload-file {
@@ -83,13 +85,22 @@
     .whole {
         display: flex;
         flex-direction: row;
-        padding: 2rem;
+        padding: 0.5rem;
         height: 95vh;
         overflow-y: hidden;
+        margin: 0;
+        gap: 0.5rem;
     }
 
     .displayer {
         width: 75%;
+    }
+
+    /* Media query for screens with a minimum width of 1200px */
+    @media only screen and (min-width: 1850px) {
+        .whole {
+            padding-inline: 10rem;
+        }
     }
 
 
@@ -127,20 +138,22 @@
         }
     }
 
-    @media (min-width: 768px)
-    { .container,
-    .container-md,
-    .container-sm {
-        max-width: 100%;
-    }
+    @media (min-width: 768px) {
+
+        .container,
+        .container-md,
+        .container-sm {
+            max-width: 100%;
+        }
     }
 
-    @media (min-width: 576px)
-    { .container,
-    .container-md,
-    .container-sm {
-        max-width: 100%;
-    }
+    @media (min-width: 576px) {
+
+        .container,
+        .container-md,
+        .container-sm {
+            max-width: 100%;
+        }
     }
 </style>
 
