@@ -96,6 +96,11 @@
         width: 75%;
     }
 
+    .pdf-displayer {
+        height: 100%;
+        overflow-y: auto;
+    }
+
     /* Media query for screens with a minimum width of 1200px */
     @media only screen and (min-width: 1850px) {
         .whole {
@@ -165,17 +170,25 @@
             <div class=" container-child border border-dark rounded-custom p-4 d-flex flex-column justify-content-start mb-2 bg-light"
                 style="width: 100%;">
 
-                <h1>PDF Highlighter</h1>
+                <h1>PDF Ticado</h1>
 
                 <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
                     <div class="d-flex flex-column w-100 justify-content-between align-items-center">
                         <div class="form-group d-flex flex-column justify-content-start mt-3" style="width: 100%;">
-                            <label for="file">Escolha um arquivo PDF:</label>
+                            <label style="color: red;" for="file">Escolha um arquivo PDF:</label>
                             <div class="d-flex flex-row align-items-center justify-content-start upload-file">
                                 <!-- Placeholder for icon -->
                                 <div id="icon-placeholder" class="mx-2"></div>
-                                <input type="file" name="file" id="file" class="form-control-file">
+                                <input type="file" name="file" id="file" class="form-control-file" required>
                             </div>
+                            <label style="color: green;" for="file">Escolha um arquivo Excel: <i class="fas fa-file-excel"></i></i></label>
+                            <div class="d-flex flex-row align-items-center justify-content-start upload-file">
+                                <!-- Placeholder for icon -->
+                                <div id="icon-placeholder" class="mx-2"></div>
+                                <input type="file" name="fileexcel" id="fileexcel" class="form-control-file" required>
+                            </div>
+                            <label for="column-select">Select a column in the excel file:</label>
+                            <input type="text" required id="column_name" name="column_name">
                         </div>
 
 
