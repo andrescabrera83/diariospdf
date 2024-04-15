@@ -3,6 +3,7 @@ import os
 import fitz
 from werkzeug.utils import secure_filename
 import pandas as pd
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
@@ -10,6 +11,11 @@ app = Flask(__name__)
 # Configure the upload directory
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+load_dotenv()
+
+ip_address = os.getenv('IP_ADDRESS')
+print("the ip: " , ip_address)
 
 # Function to check if the file extension is allowed
 def allowed_file(filename):
@@ -22,24 +28,7 @@ def get_highlighted_pdf_files():
     pdf_files = [f for f in os.listdir(pdf_folder) if f.startswith('highlighted_') and f.endswith('.pdf')]
     return pdf_files
 
-def extract_text_from_all_columns(file_path):
-    try:
-        # Load the Excel file into a pandas DataFrame
-        df = pd.read_excel(file_path, engine='openpyxl')  # Specify the engine as 'openpyxl'
-        
-        # Initialize an empty list to store all text
-        all_text = []
-
-        # Iterate through all columns in the DataFrame
-        for column in df.columns:
-            # Extract text from the current column and append it to the all_text list
-            text_list = df[column].astype(str).tolist()
-            all_text.extend(text_list)
-
-        return all_text
-    except Exception as e:
-        return str(e)
-
+###################################################################################################################
 
 # Route to render the upload form
 @app.route('/')
@@ -69,39 +58,12 @@ def upload_file():
     # Get the list of uploaded files
     files = request.files.getlist('file')
 
-    filesexcel = request.files.getlist('fileexcel')
     
-
-    for fileexcel in filesexcel:
-        if fileexcel.filename == '':
-            continue
-        
-        if fileexcel:
-            # Save the file to a temporary directory
-            filename = secure_filename(fileexcel.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            fileexcel.save(file_path)
-
-            
-            # Extract text from the Excel file
-            column_name = request.form.get('column_name')
-            text_list = extract_text_from_all_columns(file_path)
-
-            print(text_list)
-            
-            # Return the extracted text as a downloadable text file
-            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'extracted_text.txt')
-            with open(output_file_path, 'w') as f:
-                for text in text_list:
-                    f.write(text + '\n')
-            
-            return send_file(output_file_path, as_attachment=True, download_name='extracted_text.txt', mimetype='text/plain')
-        else:
-            return 'Invalid file format'
     
     # Get the value from the textarea
-    words_to_highlight = request.form.get('palavras')
-    #words_to_highlight = textarea_value.split()
+    textarea_value = request.form.get('palavras')
+    words_to_highlight = textarea_value.splitlines()
+    print(words_to_highlight)
     
     for file in files:
         if file.filename == '':
@@ -118,12 +80,11 @@ def upload_file():
             
             # Iterate through each page in the PDF
             for page in doc:
-               
-                text_instances = page.search_for(words_to_highlight,  quads=True)
-                # Highlight the word
+                text_instances = page.search_for(' '.join(words_to_highlight), quads=True)
                 for inst in text_instances:
                     highlight = page.add_highlight_annot(inst)
                     highlight.update()
+
             
             # Save the modified PDF with highlights
             output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'highlighted_' + filename)
@@ -142,5 +103,6 @@ def upload_file():
         
 
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='62.72.9.159')
