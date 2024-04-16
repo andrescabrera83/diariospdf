@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}DiariosPDF{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="welcome-paragraph">
+
+        <p style="font-size: 19px;">Bem-vindo <strong>Usuario</strong>. </p>
+        <p style="font-size: 19px;"> Consulte e marque sua busca nos diários PDF´s facilmente.</p>
+
+    </div>
+
+    <div style="width: 100%; padding: 12px;">
+
+        <hr color="black">
+
+    </div>
+
+    <div class="form-stuff">
+
+        <form  method="POST" action="{{ url_for('upload_file') }}">
+
+        <div class="select-diario">
+
+            <label for="select-diario-input">1. Selecione Um Diário</label>
+            <select name="select-diario-input" id="select-diario-input" required>
+                
+                <option value="{{diario_path}}">{{diario_path}}</option>
+                
+            </select>
+
+        </div>
+
+        <div class="select-pdf">
+
+            <p style="align-self: start;">2. Selecione O Arquivo PDF</p>
+           <table>
+            <thead>
+                <tr>
+                    <th style="width: 62%; text-align: start;">Arquivo Pdf</th>
+                    <th>Data</th>
+                    <th>Diário</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pdf_file in pdf_files %}
+                <tr>
+                    <td style="text-align: start; vertical-align: middle; font-size: 19px;">
+                        <input type="checkbox" name="file_names[]" id="" value="{{ pdf_file }}" required>
+                        {{ pdf_file }}
+                    </td>
+                    <td>
+                        hoje
+                    </td>
+                    <td>
+                        DOU-MG
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+           </table>
+
+           <span style="align-self: end; text-decoration: underline; color: blue; margin-block: 0.4rem;"><a href="">selecionar outro</a></span>
+
+        </div>
+
+        <div class="text-area-container">
+
+            <p style="align-self: start;">3. Insira as palavras-chaves embaixo:</p>
+
+            <textarea name="palavras-chaves" id="myTextarea" rows="6" required placeholder="Colar Palavras Chaves Aqui..."></textarea>
+
+        </div>
+
+        <div style="display: flex; width: 80%; justify-content: end;">
+            <button type="submit" class="button-submit">Baixar
+            </button>
+        </div>
+
+    </form>
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}

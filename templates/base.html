@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DiariosPDF{% endblock %}</title>
+    <!-- Add any CSS or JavaScript links here -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- GOOGLE FONT DMS SANS TEXT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Text:ital@0;1&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <!-- GOOGLE FONT DM SANS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Text:ital@0;1&family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <!-- JQUERY SCRIPT  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-w9jEDFGmST3LuDufkGN+JkuNOZJ4Qofg4F7+UEmHsT/lfMt1aRLQFpyJxXsD0tkh" crossorigin="anonymous">
+
+   
+
+</head>
+
+<body>
+
+    <nav class="nav-mobile">
+        <div class="user-icon">A</div>
+
+        <div style="flex: 1; padding: 21px;">
+            <hr  color="black">
+        </div>
+
+
+        <h2 style="margin-bottom: 35px;">diariospdf</h2>
+    </nav>
+
+    <nav class="nav-desktop">
+        <div style="flex: 1; padding: 21px;">
+            <hr  color="black">
+        </div>
+        <h2>diariospdf</h2>
+        <div style="flex: 1; padding: 21px;">
+            <hr  color="black">
+        </div>
+        <div class="user-icon">A</div>
+
+    </nav>
+
+
+    <main>
+        {% block content %}
+        <!-- Content of child templates will go here -->
+        {% endblock %}
+    </main>
+
+
+  </body>
+
+
+
+</body>
+
+</html>

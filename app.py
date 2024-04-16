@@ -27,8 +27,14 @@ import tabula
 app = Flask(__name__)
 
 # Configure the upload directory
+
+diario_folder = 'DOU-MG'
+
+DIARIO_FOLDER = os.path.join('static', diario_folder)
+
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['DIARIO_FOLDER'] = DIARIO_FOLDER
 
 # Get absolute path of the upload directory
 upload_dir = os.path.abspath(app.config['UPLOAD_FOLDER'])
@@ -37,6 +43,8 @@ print("Upload directory:", upload_dir)
 #get ENVIRONMENT VARIABLES
 app.config['IP_ADDRESS'] = environ.get('IP_ADDRESS')
 ip_addres = app.config['IP_ADDRESS']
+
+host='62.72.9.159'
 
 
 
@@ -53,7 +61,8 @@ def allowed_file(filename):
 # Function to retrieve list of PDF files starting with 'highlighted_'
 def get_highlighted_pdf_files():
     pdf_folder = app.config['UPLOAD_FOLDER']
-    pdf_files = [f for f in os.listdir(pdf_folder) if f.startswith('highlighted_') and f.endswith('.pdf')]
+    pdf_files = [f for f in os.listdir(pdf_folder) if f.endswith('.pdf')]
+    
     return pdf_files
 
 ###################################################################################################################
@@ -61,8 +70,10 @@ def get_highlighted_pdf_files():
 # Route to render the upload form
 @app.route('/')
 def index():
+    diario_path = app.config['DIARIO_FOLDER']
+    dp_specific = diario_path.split("/")[-1] 
     pdf_files = get_highlighted_pdf_files()
-    return render_template('index.html', pdf_files=pdf_files)
+    return render_template('index2.html', pdf_files=pdf_files, diario_path=dp_specific)
 
 ####################################################################################################################
 
@@ -129,55 +140,58 @@ def display_pdf():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    # Check if the post request has the file part
-    if 'file' not in request.files:
-        return redirect(request.url)
-    
-    # Get the list of uploaded files
-    files = request.files.getlist('file')
 
-    
-    
-    # Get the value from the textarea
-    textarea_value = request.form.get('palavras')
-    words_to_highlight = textarea_value.splitlines()
+    #select diario
+    select_diario = request.form.get('select-diario-input')
+    print(select_diario)
+
+     #select keywords
+    keywords = request.form.get('palavras-chaves')
+    words_to_highlight = keywords.splitlines()
     print(words_to_highlight)
-    
-    for file in files:
-        if file.filename == '':
-            continue
-        
-        if file and allowed_file(file.filename):
-            # Save the file to a temporary directory
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-            
-            # Open the PDF file
-            doc = fitz.open(file_path)
-            
-            # Iterate through each page in the PDF
-            for page in doc:
-                text_instances = page.search_for(' '.join(words_to_highlight), quads=True)
-                for inst in text_instances:
-                    highlight = page.add_highlight_annot(inst)
-                    highlight.update()
 
-            
-            # Save the modified PDF with highlights
-            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'highlighted_' + filename)
+    #select name file
+    file_names = request.form.getlist('file_names[]')
+    
+    for fn in file_names:
+        if fn:
+            print(fn)
+        else:
+            print("no file names")
+
+        # Construct the file path
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], fn)
+        print("file path is: ", file_path)
+
+        if os.path.exists(file_path):
+            #open the pdf file
+            doc = fitz.open(file_path)
+
+             # Iterate through each page in the PDF
+            for page in doc:
+                # Iterate through each keyword
+                for keyword in words_to_highlight:
+                    # Search for the keyword on the page
+                    text_instances = page.search_for(keyword, quads=True)
+                    for inst in text_instances:
+                        highlight = page.add_highlight_annot(inst)
+                        highlight.update()
+    
+            #save the modified pdf with highlights
+
+            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'highlighted_' + fn)
             doc.save(output_file_path, garbage=4, deflate=True, clean=True)
-            
+
             # Close the PDF document
             doc.close()
-            
-            # Return the modified PDF as a downloadable file
-            return send_file(output_file_path, as_attachment=True, download_name='highlighted_' + filename, mimetype='application/pdf')
 
-             # Render the template with the embedded PDF
-            #return 
+            #return the modified PDF as a downloadable file
+            return send_file(output_file_path, as_attachment=True, download_name='highlighted_' + fn, mimetype='application/pdf')
+
         else:
             return 'Invalid file format'
+            
+
         
 #######################################################################################################################
 
@@ -192,6 +206,7 @@ def run_spider():
 
 
 
+
 if __name__ == "__main__":
-    run_spider()  # Start the Scrapy spider
-    app.run(host='62.72.9.159', debug=True)
+    #run_spider()  # Start the Scrapy spider
+    app.run( debug=True)
