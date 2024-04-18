@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}DiariosPDF{% endblock %}
+
+{% block content %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+    }
+
+    td{
+        border: 1px solid black;
+        padding: 8px;
+    }
+
+    th{
+        border: 1px solid rgb(0, 0, 0);
+        background-color: black;
+        color: white;
+        padding: 8px;
+        font-weight: 200;
+    }
+</style>
+
+<div>
+    <h1>Palavras Chaves Encontradas:</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Palavra-chave</th>
+                <th># De Vezes Achado</th>
+                <th>paginas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index in range(keyword_info['found']|length) %}
+            {% if keyword_info['found'][index] == 'True' %}
+            <tr>
+                <td>"{{ keyword_info['keyword'][index] }}"</td>
+                <td>{{ keyword_info['count'][index] }}</td>
+                <td>{{ keyword_info['pages'][index] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">
+                    "{{ keyword_info['keyword'][index] }}" não foi achado.
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    <h1>Baixar PDF Marcado</h1>
+    <p>Click no botão abaixo para baixar o PDF marcado:</p>
+    <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary">Baixar PDF</a>
+    
+</div>
+
+
+{% endblock %}

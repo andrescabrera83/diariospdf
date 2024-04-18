@@ -1,0 +1,18 @@
+INFO:waitress:Serving on http://62.72.9.159:5000
+Upload directory: /home/rdpuser/diariospdf/pdf_highlighter/static
+Traceback (most recent call last):
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/bin/waitress-serve", line 8, in <module>
+    sys.exit(run())
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/lib/python3.10/site-packages/waitress/runner.py", line 298, in run
+    _serve(app, **kw)
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/lib/python3.10/site-packages/waitress/__init__.py", line 13, in serve
+    server = _server(app, **kw)
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/lib/python3.10/site-packages/waitress/server.py", line 78, in create_server
+    last_serv = TcpWSGIServer(
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/lib/python3.10/site-packages/waitress/server.py", line 243, in __init__
+    self.bind_server_socket()
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/lib/python3.10/site-packages/waitress/server.py", line 364, in bind_server_socket
+    self.bind(sockaddr)
+  File "/home/rdpuser/diariospdf/pdf_highlighter/venv/lib/python3.10/site-packages/waitress/wasyncore.py", line 395, in bind
+    return self.socket.bind(addr)
+OSError: [Errno 98] Address already in use

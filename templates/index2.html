@@ -20,66 +20,126 @@
 
     <div class="form-stuff">
 
-        <form  method="POST" action="{{ url_for('upload_file') }}">
+        <form method="POST" action="{{ url_for('upload_file') }}">
 
-        <div class="select-diario">
+            <div class="select-diario">
 
-            <label for="select-diario-input">1. Selecione Um Diário</label>
-            <select name="select-diario-input" id="select-diario-input" required>
-                
-                <option value="{{diario_path}}">{{diario_path}}</option>
-                
-            </select>
+                <label for="select-diario-input">1. Selecione Um Diário</label>
+                <select name="select-diario-input" id="select-diario-input" required>
 
-        </div>
+                    <option value="DOU-MG">DOU-MG</option>
 
-        <div class="select-pdf">
+                </select>
 
-            <p style="align-self: start;">2. Selecione O Arquivo PDF</p>
-           <table>
-            <thead>
-                <tr>
-                    <th style="width: 62%; text-align: start;">Arquivo Pdf</th>
-                    <th>Data</th>
-                    <th>Diário</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pdf_file in pdf_files %}
-                <tr>
-                    <td style="text-align: start; vertical-align: middle; font-size: 19px;">
-                        <input type="checkbox" name="file_names[]" id="" value="{{ pdf_file }}" required>
-                        {{ pdf_file }}
-                    </td>
-                    <td>
-                        hoje
-                    </td>
-                    <td>
-                        DOU-MG
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-           </table>
+            </div>
 
-           <span style="align-self: end; text-decoration: underline; color: blue; margin-block: 0.4rem;"><a href="">selecionar outro</a></span>
+            <div class="select-pdf">
 
-        </div>
+                <p style="align-self: start;">2. Selecione O Arquivo PDF</p>
+                <table id="table1">
+                    <thead>
+                        <tr>
+                            <th style="width: 62%; text-align: start;">Arquivo Pdf</th>
+                            <th>Data</th>
+                            <th>Diário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if not today %}
+                        <tr>
+                            <td colspan="4" style="color: rgb(172, 172, 172); padding-inline: 28px; !important">
+                                Sem Diarios Publicados Hoje
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% for pdf_file in today %}
+                        <tr>
+                            <td style="text-align: start; vertical-align: middle; font-size: 19px;">
+                                <input type="radio" class="table1-input radio-button-large" name="file_names[]" value="{{ pdf_file }}">
+                                {{ pdf_file }}
+                            </td>
+                            <td>
+                                hoje
+                            </td>
+                            <td>
+                                DOU-MG
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-        <div class="text-area-container">
+                <table id="table2" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th style="width: 62%; text-align: start;">Arquivo Pdf</th>
+                            <th>Data</th>
+                            <th>Diário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if not pdf_files %}
+                        <tr>
+                            <td colspan="4" style="color: rgb(172, 172, 172); padding-inline: 28px; !important">
+                                Sem Arquivos - Contate Suporte
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% for pdf_file in pdf_files %}
+                        <tr>
+                            <td style="text-align: start; vertical-align: middle; font-size: 19px;">
+                                <input type="radio" class="table2-input radio-button-large" name="file_names[]" value="{{ pdf_file }}">
+                                {{ pdf_file }}
+                            </td>
+                            <td>
+                                hoje
+                            </td>
+                            <td>
+                                DOU-MG
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
 
-            <p style="align-self: start;">3. Insira as palavras-chaves embaixo:</p>
+                <script>
+                    $(document).ready(function () {
+                        $("#toggleButton").click(function (event) {
+                            event.preventDefault(); // Prevent default behavior
+                            $("#table1").toggle();
+                            $("#table2").toggle();
+                            // Toggle the 'required' attribute for inputs based on table visibility
+                            $(".table1-input").prop("required", $("#table1").is(":visible"));
+                            $(".table2-input").prop("required", $("#table2").is(":visible"));
+                        });
+                    });
+                </script>
 
-            <textarea name="palavras-chaves" id="myTextarea" rows="6" required placeholder="Colar Palavras Chaves Aqui..."></textarea>
 
-        </div>
+                <div style="align-self: end; text-decoration: underline; color: blue; margin-block: 0.4rem;">
+                    <button id="toggleButton">Selecionar Anteriores</button>
+                </div>
 
-        <div style="display: flex; width: 80%; justify-content: end;">
-            <button type="submit" class="button-submit">Baixar
-            </button>
-        </div>
+            </div>
 
-    </form>
+            <div class="text-area-container">
+
+                <p style="align-self: start;" class="instrc-3">3. Insira as palavras-chaves embaixo:</p>
+
+                <textarea name="palavras-chaves" id="myTextarea" rows="6" required
+                    placeholder="Colar Palavras Chaves Aqui..."></textarea>
+
+                <p style="align-self: start; margin: 0; color: gray;">*Palavras-chaves separadas por linha.</p>
+                <p style="align-self: start; margin: 0; color: gray;">**Tenha em conta acentos.</p>
+
+            </div>
+
+            <div style="display: flex; width: 80%; justify-content: end;">
+                <button type="submit" class="button-submit">Consultar
+                </button>
+            </div>
+
+        </form>
 
     </div>
 

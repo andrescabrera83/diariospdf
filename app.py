@@ -21,6 +21,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 import tabula
+from datetime import datetime, timedelta
+
+from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlencode
 
 
 
@@ -28,13 +32,11 @@ app = Flask(__name__)
 
 # Configure the upload directory
 
-diario_folder = 'DOU-MG'
 
-DIARIO_FOLDER = os.path.join('static', diario_folder)
 
 UPLOAD_FOLDER = 'static'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['DIARIO_FOLDER'] = DIARIO_FOLDER
+
 
 # Get absolute path of the upload directory
 upload_dir = os.path.abspath(app.config['UPLOAD_FOLDER'])
@@ -59,67 +61,33 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Function to retrieve list of PDF files starting with 'highlighted_'
-def get_highlighted_pdf_files():
+def get_dou_files():
     pdf_folder = app.config['UPLOAD_FOLDER']
-    pdf_files = [f for f in os.listdir(pdf_folder) if f.endswith('.pdf')]
+    pdf_files = [f for f in os.listdir(pdf_folder) if f.startswith('caderno1') and f.endswith('.pdf')]
     
     return pdf_files
+
+def get_dou_file_today():
+    pdf_folder = app.config['UPLOAD_FOLDER']
+    # Get today's date
+    today = datetime.today().strftime('%Y-%m-%d')
+     # Construct the filename pattern
+    filename_pattern = f'caderno1_{today}.pdf'
+    print(filename_pattern)
+     # Filter PDF files based on the filename pattern
+    today_dou_file = [f for f in os.listdir(pdf_folder) if f == filename_pattern]
+    
+    return today_dou_file
 
 ###################################################################################################################
 
 # Route to render the upload form
 @app.route('/')
 def index():
-    diario_path = app.config['DIARIO_FOLDER']
-    dp_specific = diario_path.split("/")[-1] 
-    pdf_files = get_highlighted_pdf_files()
-    return render_template('index2.html', pdf_files=pdf_files, diario_path=dp_specific)
-
-####################################################################################################################
-
-# Define Scrapy spider to download PDF and extract text
-class PDFSpider(Spider):
-    name = 'pdf_spider'
-    start_urls = ['https://www.jornalminasgerais.mg.gov.br']
-
-    def __init__(self):
-        self.cursor: None
-        chrome_options = Options()
-        print("init: ", upload_dir)
-        prefs = {'download.default_directory':'/home/rdpuser/diariospdf/pdf_highlighter/static'} #UPDATE ADDRESS CORRESPONDING TO THE MACHINE, FOLDER MUST BE NAMED pdf_files
-        chrome_options.add_experimental_option('prefs', prefs)
-        #chrome_options.add_argument(f"--download.default_directory={prefs}")
-        chrome_options.add_argument("--headless")
-        self.driver = webdriver.Chrome(options=chrome_options)
-
-    def start_requests(self):
-        url = self.start_urls[0]
-        self.driver.get(url)
-        time.sleep(3)
-        self.driver.find_element(By.ID, "linkDownloadPDF").click()
-        time.sleep(4)
-        yield scrapy.Request(url, self.parse)
-
-    def parse(self, response):
-        pdf_url = response.xpath('//*[@id="linkDownloadPDF"]/@href').get()
-        if pdf_url:
-             yield Request(pdf_url, callback=self.save_pdf)
-        else:
-            self.logger.error('PDF URL not found on the webpage')
-
-
-    def save_pdf(self, response):
-        content_disposition = response.headers.get('Content-Disposition')
-        if content_disposition:
-            
-            file_name = content_disposition.split('filename=')[-1].strip('"')
-            file_path = os.path.join('/home/rdpuser/diariospdf/pdf_highlighter/static', file_name)
-            print("File path found:", file_path)
-            with open(file_path, 'wb') as f:
-                f.write(response.body)
-            
-        else:
-            print("Content-Disposition header not found. Unable to determine file name.")
+    
+    pdf_files = get_dou_files()
+    today_dou_file = get_dou_file_today()
+    return render_template('index2.html', pdf_files=pdf_files, today=today_dou_file )
 
 
 
@@ -150,6 +118,10 @@ def upload_file():
     words_to_highlight = keywords.splitlines()
     print(words_to_highlight)
 
+    # Create a list to store information about each keyword
+    keyword_info = []
+
+
     #select name file
     file_names = request.form.getlist('file_names[]')
     
@@ -167,46 +139,71 @@ def upload_file():
             #open the pdf file
             doc = fitz.open(file_path)
 
+            # Initialize a dictionary to store page numbers where each keyword is found
+            keyword_pages = {keyword: [] for keyword in words_to_highlight}
+            # Initialize a dictionary to store the count of occurrences of each keyword
+            keyword_counts = {keyword: 0 for keyword in words_to_highlight}
+
              # Iterate through each page in the PDF
-            for page in doc:
+            for page_number, page in enumerate(doc, start=1):
                 # Iterate through each keyword
                 for keyword in words_to_highlight:
                     # Search for the keyword on the page
                     text_instances = page.search_for(keyword, quads=True)
-                    for inst in text_instances:
-                        highlight = page.add_highlight_annot(inst)
-                        highlight.update()
+                    if text_instances:
+                        # If keyword is found, increment the count for the keyword
+                        keyword_counts[keyword] += len(text_instances)
+                        # Add the page number to the list of pages where the keyword was found
+                        keyword_pages[keyword].append(page_number)
+                        # Highlight the keyword on the page (if needed)
+                        for inst in text_instances:
+                            highlight = page.add_highlight_annot(inst)
+                            highlight.update()
     
             #save the modified pdf with highlights
 
-            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'highlighted_' + fn)
+            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'marcado_' + fn)
             doc.save(output_file_path, garbage=4, deflate=True, clean=True)
 
             # Close the PDF document
             doc.close()
 
-            #return the modified PDF as a downloadable file
-            return send_file(output_file_path, as_attachment=True, download_name='highlighted_' + fn, mimetype='application/pdf')
+            # Append keyword information to the keyword_info list
+            for keyword, pages in keyword_pages.items():
+                found = bool(pages)
+                count = keyword_counts[keyword]  # Get the count from keyword_counts
+                keyword_info.append({"keyword": keyword, "found": found, "count": count, "pages": pages})
+                print(keyword_info)
+
+
+            # Encode the keyword information into the URL parameters
+            keyword_info_encoded = "&".join([f"keyword={info['keyword']}&count={info['count']}&found={info['found']}&pages={info['pages']}" for info in keyword_info])
+
+           # Redirect to a route to render a template with a download button
+            return redirect(url_for('render_download_page', filename='marcado_' + fn, keyword_info=keyword_info_encoded))
 
         else:
             return 'Invalid file format'
+        
+@app.route('/pdf-marcado/<filename>')
+def render_download_page(filename):
+     # Get the encoded keyword information from the URL parameters
+    keyword_info_encoded = request.args.get('keyword_info', '')
+    # Decode the keyword information into a dictionary
+    keyword_info = parse_qs(keyword_info_encoded)
+    print("this: ",keyword_info)
+    
+    return render_template('displayer.html', filename=filename, keyword_info=keyword_info)
             
 
+@app.route('/download/<filename>')
+def download_file(filename):
+    return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename), as_attachment=True, download_name=filename, mimetype='application/pdf')
         
-#######################################################################################################################
 
-# Function to start the Scrapy spider
-def run_spider():
-    process = CrawlerProcess(settings={
-        'USER_AGENT': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-
-    })
-    process.crawl(PDFSpider)
-    process.start()
-
-
+#host='62.72.9.159'
 
 
 if __name__ == "__main__":
-    #run_spider()  # Start the Scrapy spider
-    app.run( debug=True)
+
+    app.run(debug=True)

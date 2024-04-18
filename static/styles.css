@@ -8,6 +8,7 @@ body {
     background-color: white;
     justify-content: center;
     overflow-x: hidden;
+    overflow-y: auto;
 
 
     font-family: "DM Sans", sans-serif;
@@ -17,6 +18,10 @@ body {
 
     padding-inline: 29px;
 
+}
+
+.hidden {
+    display: none !important; /* Hide the element by default */
 }
 
 .nav-mobile {
@@ -179,6 +184,27 @@ td {
 
 }
 
+#toggleButton{
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+} 
+
+#toggleButton:hover{
+    text-decoration: underline;
+}
+
+ /* Increase the size of radio buttons */
+ .radio-button-large {
+    transform: scale(1.5); /* Change the scale factor as needed */
+    margin-left: -5px;
+    margin-right: 8px;
+}
+
 .text-area-container textarea{
     width: 100%;
     font-size: 17px;
@@ -189,9 +215,11 @@ td {
     
 }
 
-.text-area-container p{
+.instrc-3{
     font-size: 20px;
 }
+
+
 
 .button-submit {
     background-color: #191919; /* Green */
