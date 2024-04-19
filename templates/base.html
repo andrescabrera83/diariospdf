@@ -23,32 +23,93 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- FONT AWESOME -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-w9jEDFGmST3LuDufkGN+JkuNOZJ4Qofg4F7+UEmHsT/lfMt1aRLQFpyJxXsD0tkh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha384-w9jEDFGmST3LuDufkGN+JkuNOZJ4Qofg4F7+UEmHsT/lfMt1aRLQFpyJxXsD0tkh" crossorigin="anonymous">
 
-   
+    <link rel="icon" href="{{ url_for('static', filename='diariospdf-logo.ico') }}" type="image/x-icon">
 
 </head>
 
+<style>
+    /* Modal styles */
+    .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 1;
+        /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%;
+        /* Full width */
+        height: 100%;
+        /* Full height */
+        overflow: auto;
+        /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0);
+        /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Black w/ opacity */
+    }
+
+   
+
+    /* Spin animation */
+    .spin {
+        width: 40px;
+        height: 40px;
+        animation: spin 3s infinite linear;
+        margin: 13px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
 <body>
+
+    <!-- Modal loading overlay -->
+    <div id="loadingModal" class="modal">
+        <div class="modal-content">
+            <!-- SVG icon with spin animation -->
+            <img src="{{ url_for('static', filename='gear-solid.svg') }}" alt="gear" class="spin">
+
+            <div>
+
+
+                <p><strong>Procesando PDF...</strong></p>
+                <p>Dependendo da quantidade de palavras isto pode levar alguns minutos.</p>
+            </div>
+        </div>
+    </div>
 
     <nav class="nav-mobile">
         <div class="user-icon">D</div>
 
         <div style="flex: 1; padding: 21px;">
-            <hr  color="black">
+            <hr color="black">
         </div>
 
 
-        <h2 style="margin-bottom: 35px;"><a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">diariospdf</a></h2>
+        <h2 style="margin-bottom: 35px;"><a href="{{ url_for('index') }}"
+                style="text-decoration: none; color: inherit;">diariospdf</a></h2>
     </nav>
 
     <nav class="nav-desktop">
         <div style="flex: 1; padding: 21px;">
-            <hr  color="black">
+            <hr color="black">
         </div>
         <h2><a href="{{ url_for('index') }}" style="text-decoration: none; color: inherit;">diariospdf</a></h2>
         <div style="flex: 1; padding: 21px;">
-            <hr  color="black">
+            <hr color="black">
         </div>
         <div class="user-icon">D</div>
 
@@ -62,8 +123,19 @@
     </main>
 
 
-  </body>
 
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            // Prevent form submission
+            event.preventDefault();
+
+            // Show modal loading overlay
+            document.getElementById('loadingModal').style.display = 'block';
+
+            // Submit form
+            this.submit();
+        });
+    </script>
 
 
 </body>

@@ -26,6 +26,8 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
 from urllib.parse import urlencode
 
+import re
+
 
 
 app = Flask(__name__)
@@ -106,6 +108,19 @@ def display_pdf():
 
 #######################################################################################################################
 
+# Function to preprocess input text
+def preprocess_input(text):
+    # Replace any non-standard line breaks with standard '\n'
+    text = re.sub(r'\r\n|\r', '\n', text)
+    # Remove any trailing punctuation marks from each line
+    lines = text.split('\n')
+    lines = [line.rstrip('.').strip() for line in lines]
+    # Join the lines back together with '\n' separator
+    preprocessed_text = '\n'.join(lines)
+    return preprocessed_text
+
+    ################################################################################################################
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
 
@@ -144,21 +159,41 @@ def upload_file():
             # Initialize a dictionary to store the count of occurrences of each keyword
             keyword_counts = {keyword: 0 for keyword in words_to_highlight}
 
-             # Iterate through each page in the PDF
+            # Iterate through each page in the PDF
             for page_number, page in enumerate(doc, start=1):
                 # Iterate through each keyword
                 for keyword in words_to_highlight:
-                    # Search for the keyword on the page
-                    text_instances = page.search_for(keyword, quads=True)
-                    if text_instances:
+    
+                    # Construct the regular expression pattern for whole-word matching
+                    regex = r'\b{}\b'.format(re.escape(keyword))
+                    
+                    # Search for the keyword on the page using regular expression
+                    matches = re.finditer(regex, page.get_text(), re.IGNORECASE)
+                    
+                    for match in matches:
                         # If keyword is found, increment the count for the keyword
-                        keyword_counts[keyword] += len(text_instances)
+                        keyword_counts[keyword] += 1
                         # Add the page number to the list of pages where the keyword was found
-                        keyword_pages[keyword].append(page_number)
-                        # Highlight the keyword on the page (if needed)
-                        for inst in text_instances:
-                            highlight = page.add_highlight_annot(inst)
-                            highlight.update()
+                        if page_number not in keyword_pages[keyword]:
+                            keyword_pages[keyword].append(page_number)
+                        
+                        
+                        # Get the start and end indices of the match
+                        start_index, end_index = match.span()
+                        
+                         # Get the text of the match
+                        matched_text = match.group()
+                        # Add the keyword to highlight only if it's a standalone word
+                        if re.search(r'\b{}\b'.format(re.escape(matched_text)), page.get_text(), re.IGNORECASE):
+                            # Find the bounding box of the matched text on the page
+                            occurrences = page.search_for(matched_text)   
+                            # Iterate through each occurrence and highlight it
+                            for bbox in occurrences:
+                                # Highlight the keyword on the page
+                                # Highlight the keyword on the page with yellow color
+                                highlight = page.add_highlight_annot(bbox)  # Yellow color
+                                highlight.update()
+                                
     
             #save the modified pdf with highlights
 
@@ -185,6 +220,8 @@ def upload_file():
         else:
             return 'Invalid file format'
         
+
+        
 @app.route('/pdf-marcado/<filename>')
 def render_download_page(filename):
      # Get the encoded keyword information from the URL parameters
@@ -206,4 +243,4 @@ def download_file(filename):
 
 if __name__ == "__main__":
 
-    app.run(debug=True)
+    app.run(host='62.72.9.159')

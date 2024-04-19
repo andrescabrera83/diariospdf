@@ -2,7 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     max-width: 100%;
-    max-height: 100vh;
+    height: 100%;
     margin: 0;
     padding: 0;
     background-color: white;
@@ -16,7 +16,7 @@ body {
     font-weight: 400;
     font-style: normal;
 
-    padding-inline: 29px;
+    padding-inline: 17px;
 
 }
 
@@ -108,7 +108,7 @@ main {
 
 .select-diario {
     display: flex;
-    width: 80%;
+    width: 100%;
     flex-direction: column;
     margin-block: 1rem;
     align-items: start;
@@ -140,7 +140,7 @@ option {
 
 .select-pdf {
     display: flex;
-    width: 80%;
+    width: 100%;
     flex-direction: column;
     align-items: center;
 }
@@ -175,8 +175,8 @@ td {
 }
 
 .text-area-container{
-    min-width: 80%;
-    max-width: 80%;
+    min-width: 95%;
+    max-width: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -219,6 +219,15 @@ td {
     font-size: 20px;
 }
 
+.btn-container{
+    display: flex; 
+    min-width: 100%; 
+    justify-content: end;
+}
+
+form{
+    width: 100%;
+}
 
 
 .button-submit {
@@ -228,14 +237,36 @@ td {
     padding: 8px 45px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    
     font-size: 16px;
     margin-block: 2rem;
     cursor: pointer;
     border-radius: 8px;
+    width: 100% !important;
   }
 
+  #myTextarea {
+    resize: vertical; /* Only allow vertical resizing */
+    /* Optionally, you can also set resize to none to completely disable resizing */
+    /* resize: none; */
+}
 
+
+/* Modal content */
+.modal-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 350px;
+    /* Could be more or less, depending on screen size */
+}
 
 
 
@@ -245,7 +276,7 @@ td {
         display: flex;
         flex-direction: column;
         max-width: 100%;
-        max-height: 100vh;
+        height: 100%;
         margin: 0;
         padding: 0;
         background-color: white;
@@ -323,6 +354,55 @@ td {
         display: inline-block;
     }
 
+    .select-pdf {
+        display: flex;
+        width: 80%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .text-area-container{
+        min-width: 80%;
+        max-width: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+    
+    }
+
+    .button-submit {
+        background-color: #191919; /* Green */
+        border: none;
+        color: white;
+        padding: 8px 45px;
+        text-align: center;
+        text-decoration: none;
+        
+        font-size: 16px;
+        margin-block: 2rem;
+        cursor: pointer;
+        border-radius: 8px;
+        
+      }
+
+      /* Modal content */
+    .modal-content {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        background-color: #fefefe;
+        margin: 15% auto;
+        /* 15% from the top and centered */
+        padding: 30px;
+        border: 1px solid #888;
+        width: 550px;
+        /* Could be more or less, depending on screen size */
+    }
+    
+
 
 
 }
@@ -334,7 +414,7 @@ td {
         display: flex;
         flex-direction: column;
         max-width: 100%;
-        max-height: 100vh;
+        height: 100%;
         margin: 0;
         padding: 0;
         background-color: white;
@@ -367,7 +447,7 @@ td {
         display: flex;
         flex-direction: column;
         max-width: 100%;
-        max-height: 100vh;
+        height: 100%;
         margin: 0;
         padding: 0;
         background-color: white;

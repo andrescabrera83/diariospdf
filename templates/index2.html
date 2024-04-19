@@ -20,7 +20,7 @@
 
     <div class="form-stuff">
 
-        <form method="POST" action="{{ url_for('upload_file') }}">
+        <form id="uploadForm" method="POST" action="{{ url_for('upload_file') }}">
 
             <div class="select-diario">
 
@@ -55,7 +55,8 @@
                         {% for pdf_file in today %}
                         <tr>
                             <td style="text-align: start; vertical-align: middle; font-size: 19px;">
-                                <input type="radio" class="table1-input radio-button-large" name="file_names[]" value="{{ pdf_file }}">
+                                <input type="radio" class="table1-input radio-button-large" name="file_names[]"
+                                    value="{{ pdf_file }}" checked>
                                 {{ pdf_file }}
                             </td>
                             <td>
@@ -88,7 +89,8 @@
                         {% for pdf_file in pdf_files %}
                         <tr>
                             <td style="text-align: start; vertical-align: middle; font-size: 19px;">
-                                <input type="radio" class="table2-input radio-button-large" name="file_names[]" value="{{ pdf_file }}">
+                                <input type="radio" class="table2-input radio-button-large" name="file_names[]"
+                                    value="{{ pdf_file }}">
                                 {{ pdf_file }}
                             </td>
                             <td>
@@ -126,15 +128,44 @@
 
                 <p style="align-self: start;" class="instrc-3">3. Insira as palavras-chaves embaixo:</p>
 
+                <button id="clearButton" style="align-self: end; margin-bottom: 9px;">Limpar</button>
                 <textarea name="palavras-chaves" id="myTextarea" rows="6" required
                     placeholder="Colar Palavras Chaves Aqui..."></textarea>
+
 
                 <p style="align-self: start; margin: 0; color: gray;">*Palavras-chaves separadas por linha.</p>
                 <p style="align-self: start; margin: 0; color: gray;">**Tenha em conta acentos.</p>
 
             </div>
 
-            <div style="display: flex; width: 80%; justify-content: end;">
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var textarea = document.getElementById('myTextarea');
+                    var clearButton = document.getElementById('clearButton');
+
+                    clearButton.addEventListener('click', function () {
+                        event.preventDefault();
+                        textarea.value = ''; // Clear the textarea content
+                    });
+                });
+
+            </script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var textarea = document.getElementById('myTextarea');
+                    var form = document.getElementById('uploadForm');
+
+                    form.addEventListener('submit', function (event) {
+                        if (textarea.value.length < 2) {
+                            alert('Por favor, insira pelo menos uma palavra.');
+                            event.preventDefault(); // Prevent form submission
+                        }
+                    });
+                });
+            </script>
+
+            <div class=".btn-container">
                 <button type="submit" class="button-submit">Consultar
                 </button>
             </div>

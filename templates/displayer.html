@@ -25,15 +25,20 @@
     }
 </style>
 
-<div>
+<div style="margin-bottom: 57px ; width: 80%;">
+
+    <h1>Baixar PDF Marcado</h1>
+    <p>Click no botão abaixo para baixar o PDF marcado:</p>
+    <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary">Baixar PDF</a>
     <h1>Palavras Chaves Encontradas:</h1>
+    <br>
 
     <table>
         <thead>
             <tr>
                 <th>Palavra-chave</th>
                 <th># De Vezes Achado</th>
-                <th>paginas</th>
+                <th>Páginas</th>
             </tr>
         </thead>
         <tbody>
@@ -46,7 +51,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="4">
+                <td colspan="4" style="font-size: large; color: rgb(135, 135, 135);">
                     "{{ keyword_info['keyword'][index] }}" não foi achado.
                 </td>
             </tr>
@@ -56,10 +61,7 @@
         </tbody>
     </table>
 
-    <h1>Baixar PDF Marcado</h1>
-    <p>Click no botão abaixo para baixar o PDF marcado:</p>
-    <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary">Baixar PDF</a>
-    
+   
 </div>
 
 
