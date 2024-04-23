@@ -63,13 +63,21 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Function to retrieve list of PDF files starting with 'highlighted_'
-def get_dou_files():
+def get_jmg_files():
     pdf_folder = app.config['UPLOAD_FOLDER']
-    pdf_files = [f for f in os.listdir(pdf_folder) if f.startswith('caderno1') and f.endswith('.pdf')]
+    jmg_files = [f for f in os.listdir(pdf_folder) if f.startswith('caderno1') and f.endswith('.pdf')]
     
-    return pdf_files
+    return jmg_files
 
-def get_dou_file_today():
+def get_dou_files():
+    today = datetime.today().strftime('%Y_%m')
+    pdf_folder = app.config['UPLOAD_FOLDER']
+    dou_files = [f for f in os.listdir(pdf_folder) if f.startswith(today) and f.endswith('.pdf')]
+    print("here: ", dou_files)
+
+    return dou_files
+
+def get_jmg_file_today():
     pdf_folder = app.config['UPLOAD_FOLDER']
     # Get today's date
     today = datetime.today().strftime('%Y-%m-%d')
@@ -77,8 +85,19 @@ def get_dou_file_today():
     filename_pattern = f'caderno1_{today}.pdf'
     print(filename_pattern)
      # Filter PDF files based on the filename pattern
-    today_dou_file = [f for f in os.listdir(pdf_folder) if f == filename_pattern]
+    today_jmg_file = [f for f in os.listdir(pdf_folder) if f.startswith('caderno1') and f.endswith(f'_{today}.pdf')]
     
+    return today_jmg_file
+
+def get_dou_file_today():
+    pdf_folder = app.config['UPLOAD_FOLDER']
+    # GEt Today´s Date
+    today = datetime.today().strftime('%Y_%m_%d')
+    # Construct the filename pattern
+    filename_pattern = f'{today}_ASSINADO_do1.pdf'
+
+    today_dou_file = [f for f in os.listdir(pdf_folder) if f.startswith(today) and f.endswith('.pdf')]
+
     return today_dou_file
 
 ###################################################################################################################
@@ -87,9 +106,11 @@ def get_dou_file_today():
 @app.route('/')
 def index():
     
-    pdf_files = get_dou_files()
+    jmg_files = get_jmg_files()
+    dou_files = get_dou_files()
+    today_jmg_file = get_jmg_file_today()
     today_dou_file = get_dou_file_today()
-    return render_template('index2.html', pdf_files=pdf_files, today=today_dou_file )
+    return render_template('index2.html', jmg_files=jmg_files, dou_files=dou_files, today_jmg=today_jmg_file, today_dou=today_dou_file )
 
 
 
@@ -243,4 +264,4 @@ def download_file(filename):
 
 if __name__ == "__main__":
 
-    app.run(host='62.72.9.159')
+    app.run(debug=True)

@@ -1252,3 +1252,5 @@ Traceback (most recent call last):
     # Convert the bounding box to PDF coordinates
 IndexError: tuple index out of range
 INFO:waitress:Serving on http://62.72.9.159:5000
+INFO:waitress:Serving on http://62.72.9.159:5000
+INFO:waitress:Serving on http://62.72.9.159:5000

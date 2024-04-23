@@ -18,16 +18,23 @@
 
     th{
         border: 1px solid rgb(0, 0, 0);
-        background-color: black;
-        color: white;
+        background-color: rgb(207, 207, 207);
+        
         padding: 8px;
-        font-weight: 200;
+        font-weight: 400;
     }
 </style>
 
-<div style="margin-bottom: 57px ; width: 80%;">
+<div style="margin-bottom: 57px ; width: 80%; ">
 
-    <h1>Baixar PDF Marcado</h1>
+    <div style="display: flex; flex-direction: row; align-items: center;">
+
+        <h1>Baixar PDF Marcado</h1>
+        <img src="{{ url_for('static', filename='download-solid.svg') }}" alt="download" style="width: 32 px; height: 32px; margin-left: 12px;" >
+
+    </div>
+
+    
     <p>Click no botão abaixo para baixar o PDF marcado:</p>
     <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary">Baixar PDF</a>
     <h1>Palavras Chaves Encontradas:</h1>
@@ -37,7 +44,7 @@
         <thead>
             <tr>
                 <th>Palavra-chave</th>
-                <th># De Vezes Achado</th>
+                <th>Quantidade De Vezes Encontrado</th>
                 <th>Páginas</th>
             </tr>
         </thead>
