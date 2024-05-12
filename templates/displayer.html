@@ -27,16 +27,29 @@
 
 <div style="margin-bottom: 57px ; width: 80%; ">
 
-    <div style="display: flex; flex-direction: row; align-items: center;">
+    <div style="margin-block: ;">
 
-        <h1>Baixar PDF Marcado</h1>
-        <img src="{{ url_for('static', filename='download-solid.svg') }}" alt="download" style="width: 32 px; height: 32px; margin-left: 12px;" >
+        <div style="display: flex; flex-direction: row; align-items: center;">
+
+            <h1>Baixar PDF Marcado</h1>
+            <img src="{{ url_for('static', filename='download-solid.svg') }}" alt="download" style="width: 32 px; height: 32px; margin-left: 12px;" >
+    
+        </div>
+    
+        
+        <p>Clique no botão abaixo para baixar o PDF marcado:</p>
+        <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary">Baixar PDF</a>
 
     </div>
 
     
-    <p>Click no botão abaixo para baixar o PDF marcado:</p>
-    <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary">Baixar PDF</a>
+    <br>
+    <hr style="color: black; border: 1px solid black;">
+    <br>
+    <div style="width: fit-content; height: fit-content; border-radius: 12px; background-color: rgb(242, 238, 197); padding: 0px; padding-inline: 18px; padding-block: 1px; margin-block: 10px;">
+        <p style="margin-top: 14px; color: black;">* O sistema cria palavras sem acentos e caracteres especiais para ampliar a busca no arquivo pdf. </p>
+    </div>
+    
     <h1>Palavras Chaves Encontradas:</h1>
     <br>
 
@@ -56,17 +69,26 @@
                 <td>{{ keyword_info['count'][index] }}</td>
                 <td>{{ keyword_info['pages'][index] }}</td>
             </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" style="font-size: large; color: rgb(135, 135, 135);">
-                    "{{ keyword_info['keyword'][index] }}" não foi achado.
-                </td>
-            </tr>
             {% endif %}
             {% endfor %}
 
         </tbody>
     </table>
+
+    <br>
+    <h1>Palavras Chaves Não Encontradas</h1>
+    <div>
+        {% for index in range(keyword_info['found']|length) %}
+            {% if keyword_info['found'][index] == 'False' %}
+            
+                <p style="display: inline; color: gray;"> - {{ keyword_info['keyword'][index] }} </p>
+               
+            {% endif %}
+            {% endfor %}
+    </div>
+
+    
+    
 
    
 </div>

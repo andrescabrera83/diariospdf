@@ -1,0 +1,86 @@
+# Define the process_page function outside of the route handler
+def process_page(file_path, page_number, words_to_highlight, keyword_info):
+    logging.info(f"Process started for page {page_number} of {file_path}")
+    try:
+        doc = fitz.open(file_path)
+        page = doc.load_page(page_number - 1)  # Page numbers are 1-indexed
+
+        keyword_pages = {keyword: [] for keyword in words_to_highlight}
+        keyword_counts = {keyword: 0 for keyword in words_to_highlight}
+
+        for keyword in words_to_highlight:
+            regex = r'\b{}\b'.format(re.escape(keyword))
+            matches = re.finditer(regex, page.get_text(), re.IGNORECASE)
+            print(matches)
+            for match in matches:
+                keyword_counts[keyword] += 1
+                if page_number not in keyword_pages[keyword]:
+                    keyword_pages[keyword].append(page_number)
+                matched_text = match.group()
+                if re.search(r'\b{}\b'.format(re.escape(matched_text)), page.get_text(), re.IGNORECASE):
+                    occurrences = page.search_for(matched_text) 
+                    print(occurrences) 
+                    for bbox in occurrences:
+                        highlight = page.add_highlight_annot(bbox)
+                        highlight.update()
+                        print(highlight)
+
+        doc.close()
+
+        # Append keyword information to the shared list
+        keyword_info.append((file_path, page_number, keyword_pages, keyword_counts))
+
+    except Exception as e:
+        traceback.print_exc()
+    
+# Route handler
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    try:
+        # Select keywords
+        keywords = request.form.get('palavras-chaves')
+        words_to_highlight = keywords.splitlines()
+
+        # Select name files
+        file_names = request.form.getlist('file_names[]')
+
+        # Create a multiprocessing manager to share data between processes
+        manager = Manager()
+        keyword_info = manager.list()
+
+        # Create a multiprocessing pool
+        pool = Pool()
+
+        # Process each page of each file in parallel
+        for fn in file_names:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], fn)
+            if os.path.exists(file_path):
+                doc = fitz.open(file_path)
+                num_pages = len(doc)
+                doc.close()
+
+                # Use starmap_async to pass additional arguments to the function
+                pool.starmap_async(process_page, [(file_path, page_number, words_to_highlight, keyword_info) for page_number in range(1, num_pages + 1)])
+
+        # Close the pool and wait for all processes to finish
+        pool.close()
+        pool.join()
+
+        # Aggregate keyword information
+        final_keyword_info = []
+        for info in keyword_info:
+            file_path, page_number, keyword_pages, keyword_counts = info
+            for keyword, pages in keyword_pages.items():
+                found = bool(pages)
+                count = keyword_counts[keyword]
+                final_keyword_info.append({"file_name": os.path.basename(file_path), "page_number": page_number, "keyword": keyword, "found": found, "count": count, "pages": pages})
+
+        # Encode the keyword information into the URL parameters
+        keyword_info_encoded = "&".join([f"file_name={info['file_name']}&page_number={info['page_number']}&keyword={info['keyword']}&count={info['count']}&found={info['found']}&pages={info['pages']}" for info in final_keyword_info])
+
+        # Redirect to a route to render a template with a download button
+        return redirect(url_for('render_download_page', filename='marcado_' + file_names[0], keyword_info=keyword_info_encoded))
+
+    except Exception as e:
+        traceback.print_exc()
+        return 'An error occurred while processing the files. Please try again later.', 500
