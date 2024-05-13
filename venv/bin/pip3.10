@@ -1,4 +1,4 @@
-#!/home/rdpuser/diariospdf/pdf_highlighter/venv/bin/python3
+#!/home/rdpuser/pdf_highlighter/diariospdf/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

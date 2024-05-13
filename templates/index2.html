@@ -20,7 +20,7 @@
 
     <div class="form-stuff">
 
-        <form id="uploadForm" method="POST" action="{{ url_for('upload_file') }}">
+        <form id="uploadForm" method="POST"  enctype="multipart/form-data" action="{{ url_for('upload_file') }}">
 
             <!-- <div class="select-diario">
 
@@ -47,7 +47,7 @@
 
             </div> -->
 
-            <div class="select-pdf">
+            <!-- <div class="select-pdf">
 
                 <p style="align-self: start;">1. Selecione O Arquivo PDF</p>
                 <table id="table1">
@@ -201,6 +201,63 @@
                     <button id="toggleButton">Selecionar Anteriores</button>
                 </div>
 
+            </div> -->
+
+            <div class="select-pdf">
+                <div class="spdf">
+                <p style="align-self: start;">1. Selecione O Arquivo PDF</p>
+                    <div class="spdf-c form-group" style="width: 100%;">
+                       
+                        <div class="upload-file">
+                            <!-- Placeholder for icon -->
+                            <div id="icon-placeholder" class="mx-2"></div>
+                            <input type="file" name="file" id="file" required>
+                        </div>
+                    
+                    </div>
+
+
+    
+    <script>
+        // Function to update icon based on file validity
+        function updateIcon(valid) {
+            var iconPlaceholder = document.getElementById('icon-placeholder');
+            if (valid) {
+                // If file is valid, show green check icon
+                iconPlaceholder.innerHTML = '<i style="color:green;" class="fas fa-check-circle text-success"></i>';
+                // Enable the upload button
+                document.getElementById('upload-btn').disabled = false;
+                // Remove the disabled class from button
+                document.getElementById('upload-btn').classList.remove('disabled-btn');
+
+
+            } else {
+                // If file is invalid, show red icon
+                iconPlaceholder.innerHTML = '<i style="color:red;" class="fa-solid fa-circle-xmark"></i>';
+                // Disable the upload button
+                document.getElementById('upload-btn').disabled = true;
+                // Add the disabled class to button
+                document.getElementById('upload-btn').classList.add('disabled-btn');
+
+            }
+        }
+        // Function to check if the file has a valid format
+        function checkFile() {
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+            var validFormats = ['pdf']; // Add more valid formats if needed
+            var fileExtension = file.name.split('.').pop().toLowerCase();
+            var isValid = validFormats.includes(fileExtension);
+            updateIcon(isValid);
+        }
+        // Add event listener to file input to check file format on change
+        document.getElementById('file').addEventListener('change', checkFile);
+    </script>
+
+
+
+
+                </div>
             </div>
 
             <div class="text-area-container">
@@ -245,7 +302,7 @@
             </script>
 
             <div class=".btn-container">
-                <button type="submit" class="button-submit">Consultar
+                <button id="upload-btn" type="submit" class="button-submit" disabled>Consultar
                 </button>
             </div>
 

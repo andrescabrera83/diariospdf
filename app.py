@@ -1,26 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, send_from_directory, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from werkzeug.utils import secure_filename
 import os
 from os import environ
 import fitz
 import pandas as pd
 from dotenv import load_dotenv
-from scrapy.crawler import CrawlerProcess
-from scrapy.spiders import Spider
-from scrapy.http import Request
+
 from pathlib import Path
 import uuid
-from PyPDF2 import PdfReader
-import scrapy
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
+
 import time
-import tabula
+
 from datetime import datetime, timedelta
 
 from urllib.parse import urlparse, parse_qs
@@ -278,16 +268,25 @@ def upload_file():
     #select name file
     file_names = request.form.getlist('file_names[]')
     
-    for fn in file_names:
-        if fn:
+    # Get the list of uploaded files
+    files = request.files.getlist('file')
+
+    #print("CHECK WHATEVER FILE YOU ARE TRYING TO GET: ", file_names, " -  ", files)
+    
+    for fn in files:
+        if fn and allowed_file(fn.filename):
             #print(fn)
-            pass
+            filename = secure_filename(fn.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            fn.save(path)
         else:
             print("no file names")
             
         # Construct the file path
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], fn)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], fn.filename)
         #print("file path is: ", file_path)
+        
+        print
             
             
     
@@ -347,7 +346,7 @@ def upload_file():
             
             
             # Save the modified PDF with highlights
-            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'marcado_' + fn)
+            output_file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'marcado_' + fn.filename)
             doc.save(output_file_path, garbage=4, deflate=True, clean=True)
             
             doc.close()
@@ -362,7 +361,7 @@ def upload_file():
             print("novo algoritmo: tempo de demora com multiprocessing: ", elapsed_time)
             
             # Redirect to a route to render a template with a download button
-            return redirect(url_for('render_download_page', filename='marcado_' + fn, keyword_info=keyword_info_encoded))   
+            return redirect(url_for('render_download_page', filename='marcado_' + fn.filename, keyword_info=keyword_info_encoded))   
             
         else:
             return 'Invalid file format'
@@ -494,4 +493,4 @@ def download_file(filename):
 
 if __name__ == "__main__":
 
-    app.run(host='62.72.9.159')
+    app.run(debug=True)

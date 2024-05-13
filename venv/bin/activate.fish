@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/rdpuser/diariospdf/pdf_highlighter/venv"
+set -gx VIRTUAL_ENV "/home/rdpuser/pdf_highlighter/diariospdf/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

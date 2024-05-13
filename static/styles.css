@@ -71,6 +71,24 @@ main {
     justify-content: center;
 }
 
+.spdf{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.spdf-c {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: start;
+    margin-top: 12px;
+}
+
+
+
 
 .welcome-paragraph {
     text-align: center;
@@ -143,6 +161,16 @@ option {
     width: 100%;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+}
+
+.upload-file {
+    border: 1px dashed #8e8e8e;
+    padding: 3rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+
 }
 
 .select-pdf p {
